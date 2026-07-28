@@ -153,7 +153,7 @@ src
 ├── strategy
 ├── util
 └── AirBnbApplication.java
-
+```
 ## 🧠 Design Decisions
 
 This project incorporates several backend design principles to improve maintainability and extensibility.
