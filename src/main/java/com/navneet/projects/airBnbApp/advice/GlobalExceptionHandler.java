@@ -1,5 +1,6 @@
 package com.navneet.projects.airBnbApp.advice;
 
+import com.navneet.projects.airBnbApp.exception.InvalidTokenException;
 import com.navneet.projects.airBnbApp.exception.ResourceNotFoundException;
 import io.jsonwebtoken.JwtException;
 import org.springframework.http.HttpStatus;
@@ -32,6 +33,15 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(JwtException.class)
     public ResponseEntity<ApiResponse<?>> handleJwtException(JwtException ex) {
+        ApiError apiError = ApiError.builder()
+                .status(HttpStatus.UNAUTHORIZED)
+                .message(ex.getMessage())
+                .build();
+        return buildErrorResponseEntity(apiError);
+    }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<ApiResponse<?>> handleInvalidTokenException(InvalidTokenException ex) {
         ApiError apiError = ApiError.builder()
                 .status(HttpStatus.UNAUTHORIZED)
                 .message(ex.getMessage())

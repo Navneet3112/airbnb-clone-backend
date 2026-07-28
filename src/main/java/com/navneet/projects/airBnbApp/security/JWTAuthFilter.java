@@ -41,6 +41,12 @@ public class JWTAuthFilter extends OncePerRequestFilter {
             }
 
             String token = requestTokenHeader.split("Bearer ")[1];
+
+            if (!"access".equals(jwtService.getTokenType(token))) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
             Long userId = jwtService.getUserIdFromToken(token);
 
             if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {

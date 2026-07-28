@@ -26,6 +26,7 @@ public class JWTService {
                 .subject(user.getId().toString())
                 .claim("email", user.getEmail())
                 .claim("roles", user.getRoles().toString())
+                .claim("type","access")
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 1000*60*10))
                 .signWith(getSecretKey())
@@ -35,19 +36,27 @@ public class JWTService {
     public String generateRefreshToken(User user) {
         return Jwts.builder()
                 .subject(user.getId().toString())
+                .claim("type", "refresh")
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 1000L *60*60*24*30*6))
                 .signWith(getSecretKey())
                 .compact();
     }
 
-    public Long getUserIdFromToken(String token) {
-        Claims claims = Jwts.parser()
+    private Claims getClaims(String token) {
+        return Jwts.parser()
                 .verifyWith(getSecretKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
-        return Long.valueOf(claims.getSubject());
+    }
+
+    public Long getUserIdFromToken(String token) {
+        return Long.valueOf(getClaims(token).getSubject());
+    }
+
+    public String getTokenType(String token) {
+        return getClaims(token).get("type", String.class);
     }
 
 }

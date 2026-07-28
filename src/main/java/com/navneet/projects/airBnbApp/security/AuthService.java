@@ -5,6 +5,7 @@ import com.navneet.projects.airBnbApp.dto.SignUpRequestDto;
 import com.navneet.projects.airBnbApp.dto.UserDto;
 import com.navneet.projects.airBnbApp.entity.User;
 import com.navneet.projects.airBnbApp.entity.enums.Role;
+import com.navneet.projects.airBnbApp.exception.InvalidTokenException;
 import com.navneet.projects.airBnbApp.exception.ResourceNotFoundException;
 import com.navneet.projects.airBnbApp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -58,6 +59,9 @@ public class AuthService {
     }
 
     public String refreshToken(String refreshToken) {
+        if (!"refresh".equals(jwtService.getTokenType(refreshToken))) {
+            throw new InvalidTokenException("Invalid token type: refresh token required");
+        }
         Long id = jwtService.getUserIdFromToken(refreshToken);
 
         User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found with id: "+id));
